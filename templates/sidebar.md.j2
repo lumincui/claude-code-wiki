@@ -1,0 +1,22 @@
+```json
+{
+  "sidebar": [
+    {
+      "text": "Architecture",
+      "items": [
+        { "text": "Overview", "link": "/index" },
+        { "text": "Relationships", "link": "/relationships" }
+      ]
+    },
+    {
+      "text": "Components",
+      "items": [
+{% for comp in components %}
+        { "text": "{{ comp.name }}", "link": "/components/{{ comp.name.lower().replace(" ", "-") }}" }{% if not loop.last %},{% endif %}
+
+{% endfor %}
+      ]
+    }
+  ]
+}
+```

@@ -1,0 +1,33 @@
+[project]
+name = "claude-code-wiki"
+version = "0.1.0"
+description = "Generate architecture-focused knowledge graph wiki from source code"
+requires-python = ">=3.11"
+dependencies = [
+    "tree-sitter>=0.21",
+    "networkx>=3.2",
+    "anthropic>=0.21",
+    "jinja2>=3.1",
+    "click>=8.1",
+    "pyyaml>=6.0",
+    "python-dotenv>=1.0",
+    "langchain>=0.3",
+    "langchain-anthropic>=0.2",
+    "langchain-core>=0.3",
+]
+
+[project.scripts]
+claude-code-wiki = "claude_code_wiki.cli.commands:cli"
+
+[project.optional-dependencies]
+dev = ["pytest", "ruff"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/claude_code_wiki"]
+
+[tool.ruff]
+line-length = 100

@@ -1,0 +1,57 @@
+# {{ component.name }}
+
+{% if component.description %}
+{{ component.description }}
+{% else %}
+## Design Intent
+
+> Component identified through community detection and architecture analysis.
+
+{% endif %}
+
+## Key Interfaces
+
+{% for entity in entities %}
+{% if entity.type.value in ["class", "function"] %}
+### `{{ entity.name }}`
+
+{% if entity.signature %}
+```
+{{ entity.signature }}
+```
+{% endif %}
+
+{% if entity.docstring %}
+{{ entity.docstring }}
+{% endif %}
+
+{% endif %}
+{% endfor %}
+
+## Contained Entities
+
+| Entity | Type | File |
+|--------|------|------|
+{% for entity in entities %}
+| [[{{ entity.name }}]] | {{ entity.type.value }} | `{{ entity.file_path.split("/")[-1] }}` |
+{% endfor %}
+
+## Dependencies
+
+{% if incoming_relations %}
+### Consumed By
+{% for rel in incoming_relations[:5] %}
+- [[{{ entities[rel.source_id].name if rel.source_id in entities else rel.source_id }}]]
+{% endfor %}
+{% endif %}
+
+{% if outgoing_relations %}
+### Depends On
+{% for rel in outgoing_relations[:5] %}
+- [[{{ entities[rel.target_id].name if rel.target_id in entities else rel.target_id }}]]
+{% endfor %}
+{% endif %}
+
+---
+
+[← Back to Overview](../index.md)

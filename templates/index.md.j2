@@ -1,0 +1,34 @@
+# Architecture Overview
+
+This wiki documents the architecture of the codebase.
+
+## Statistics
+
+- **Entities**: {{ entity_count }}
+- **Relations**: {{ relation_count }}
+- **Components**: {{ components|length }}
+
+## Components
+
+{% for comp in components %}
+- [{{ comp.name }}](./components/{{ comp.name.lower().replace(" ", "-") }}.md)
+{% endfor %}
+
+## Architecture Graph
+
+```mermaid
+graph TD
+{% for comp in components %}
+    {{ comp.id }}["{{ comp.name }}"]
+{% endfor %}
+{% for comp in components %}
+{% for entity_id in comp.entities[:3] %}
+    {{ comp.id }} --> {{ entity_id }}
+{% endfor %}
+{% endfor %}
+```
+
+## Navigation
+
+- [Component Details](./components/)
+- [Relationships](./relationships.md)
