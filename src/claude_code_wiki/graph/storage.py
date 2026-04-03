@@ -189,3 +189,114 @@ class CommunityDetector:
     def _simple_community_detection(self, graph) -> dict[str, int]:
         connected = list(nx.connected_components(graph))
         return {node: i for i, comp in enumerate(connected) for node in comp}
+
+
+class DirectoryAwareDetector:
+    """Groups entities by directory first, then refines with graph analysis."""
+
+    # Min entities to consider a directory a separate component
+    MIN_DIR_COMPONENT_SIZE = 3
+
+    def detect_components(self, graph: KnowledgeGraph) -> list[set[str]]:
+        # Step 1: Group entities by parent directory
+        dir_groups: dict[str, set[str]] = {}
+        module_to_dir: dict[str, str] = {}
+
+        for eid, entity in graph.entities.items():
+            if entity.type.value == "module":
+                # module entities have id like "module:src/ink/output.ts"
+                # file_path is the actual file path
+                dir_path = str(Path(entity.file_path).parent)
+                dir_name = Path(entity.file_path).parent.name
+            else:
+                # For classes/functions, find their parent module
+                # Entity id is like "/path/to/file.ts:className"
+                parts = eid.rsplit(":", 1)
+                if len(parts) == 2 and ":" in eid:
+                    file_part = parts[0]
+                    dir_path = str(Path(file_part).parent)
+                    dir_name = Path(file_part).parent.name
+                else:
+                    dir_path = str(Path(entity.file_path).parent)
+                    dir_name = Path(entity.file_path).parent.name
+
+            if dir_path not in dir_groups:
+                dir_groups[dir_path] = set()
+            dir_groups[dir_path].add(eid)
+
+            if entity.type.value == "module":
+                module_to_dir[eid] = dir_path
+
+        # Step 2: Put all entities into directory-based components
+        dir_components: dict[str, set[str]] = {}
+        for eid, entity in graph.entities.items():
+            if entity.type.value == "module":
+                dir_path = module_to_dir.get(eid)
+            else:
+                parts = eid.rsplit(":", 1)
+                file_part = parts[0] if len(parts) == 2 and ":" in eid else entity.file_path
+                dir_path = str(Path(file_part).parent)
+
+            if dir_path is None:
+                continue
+            if dir_path not in dir_components:
+                dir_components[dir_path] = set()
+            dir_components[dir_path].add(eid)
+
+        # Step 3: Build a directory-level graph to find cross-directory relations
+        dir_graph: dict[str, dict[str, float]] = {}
+        for rel in graph.relations:
+            src_dir = self._get_entity_dir(rel.source_id, graph.entities, module_to_dir)
+            tgt_dir = self._get_entity_dir(rel.target_id, graph.entities, module_to_dir)
+            if src_dir and tgt_dir and src_dir != tgt_dir:
+                if src_dir not in dir_graph:
+                    dir_graph[src_dir] = {}
+                weight = rel.weight * (3.0 if rel.type.value == "calls" else 1.0)
+                dir_graph[src_dir][tgt_dir] = dir_graph[src_dir].get(tgt_dir, 0) + weight
+
+        # Step 4: Merge small directories that are heavily cross-connected
+        merge_threshold = 5.0
+        merged: dict[str, str] = {}
+
+        for dir_path, entities in list(dir_components.items()):
+            if len(entities) < self.MIN_DIR_COMPONENT_SIZE and dir_path in dir_graph:
+                connections = dir_graph[dir_path]
+                if connections:
+                    best_target: str
+                    best_weight: float
+                    best_target, best_weight = max(connections.items(), key=lambda x: x[1])
+                    if best_weight >= merge_threshold:
+                        target_dir = merged.get(best_target, best_target)
+                        if target_dir not in dir_components:
+                            dir_components[target_dir] = set()
+                        dir_components[target_dir].update(entities)
+                        del dir_components[dir_path]
+                        merged[dir_path] = target_dir
+
+        # Step 5: Generate component names from directory names
+        components = []
+        for dir_path, entities in dir_components.items():
+            if not entities:
+                continue
+            dir_name = Path(dir_path).name or Path(dir_path).parent.name
+            components.append((dir_name, entities))
+
+        return [entities for _, entities in components]
+
+    def _get_entity_dir(
+        self, eid: str, entities: dict[str, Entity], module_to_dir: dict[str, str]
+    ) -> str | None:
+        """Get the directory path for an entity."""
+        if eid in module_to_dir:
+            return module_to_dir[eid]
+
+        if eid in entities:
+            entity = entities[eid]
+            return str(Path(entity.file_path).parent)
+
+        # Try to extract file path from entity id
+        parts = eid.rsplit(":", 1)
+        if len(parts) == 2 and ":" in eid:
+            return str(Path(parts[0]).parent)
+        return None
+

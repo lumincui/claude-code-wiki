@@ -1,56 +1,43 @@
 # {{ component.name }}
 
-{% if component.description %}
-{{ component.description }}
-{% else %}
-## Design Intent
+{% if component.description %}{{ component.description }}{% else %}> Grouped by directory structure and refined by code relation analysis.{% endif %}
 
-> Component identified through community detection and architecture analysis.
+## Summary
 
-{% endif %}
+| Metric | Count |
+|--------|-------|
+| Modules | {{ entities|selectattr('type.value', 'equalto', 'module')|list|length }} |
+| Classes | {{ entities|selectattr('type.value', 'equalto', 'class')|list|length }} |
+| Functions | {{ entities|selectattr('type.value', 'equalto', 'function')|list|length }} |
+| External Dependencies | {{ outgoing_relations|length }} |
+| Consumers | {{ incoming_relations|length }} |
 
-## Key Interfaces
+{%- set classes = entities|selectattr('type.value', 'equalto', 'class')|list %}
+{%- set functions = entities|selectattr('type.value', 'equalto', 'function')|list %}
+{%- set comp_safe = component.name|replace(" ", "-")|replace(":", "-")|replace(".", "-") %}
 
-{% for entity in entities %}
-{% if entity.type.value in ["class", "function"] %}
-### `{{ entity.name }}`
+{%- if classes %}
+## Classes
 
-{% if entity.signature %}
-```
-{{ entity.signature }}
-```
-{% endif %}
+{%- for entity in classes %}
+{%- set safe_name = entity.name|replace(" ", "-")|replace(":", "-")|replace(".", "-") %}
+- [[{{ comp_safe }}/{{ safe_name }}|{{ entity.name }}]]
+{%- endfor %}
+{%- endif %}
 
-{% if entity.docstring %}
-{{ entity.docstring }}
-{% endif %}
+{%- if functions %}
+## Functions
 
-{% endif %}
-{% endfor %}
+This component contains {{ functions|length }} functions.
 
-## Contained Entities
-
-| Entity | Type | File |
-|--------|------|------|
-{% for entity in entities %}
-| [[{{ entity.name }}]] | {{ entity.type.value }} | `{{ entity.file_path.split("/")[-1] }}` |
-{% endfor %}
-
-## Dependencies
-
-{% if incoming_relations %}
-### Consumed By
-{% for rel in incoming_relations[:5] %}
-- [[{{ entities[rel.source_id].name if rel.source_id in entities else rel.source_id }}]]
-{% endfor %}
-{% endif %}
-
-{% if outgoing_relations %}
-### Depends On
-{% for rel in outgoing_relations[:5] %}
-- [[{{ entities[rel.target_id].name if rel.target_id in entities else rel.target_id }}]]
-{% endfor %}
-{% endif %}
+{%- for entity in functions[:30] %}
+{%- set safe_name = entity.name|replace(" ", "-")|replace(":", "-")|replace(".", "-") %}
+- [[{{ comp_safe }}/{{ safe_name }}|{{ entity.name }}]]{% if entity.signature %} — `{{ entity.signature }}`{% endif %}
+{%- endfor %}
+{%- if functions|length > 30 %}
+_... and {{ functions|length - 30 }} more functions_
+{%- endif %}
+{%- endif %}
 
 ---
 

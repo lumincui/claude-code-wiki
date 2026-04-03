@@ -1,0 +1,209 @@
+{
+  "nodes": [
+    {
+      "id": "assistant",
+      "name": "assistant",
+      "type": "",
+      "entity_count": 5
+    },
+    {
+      "id": "bootstrap",
+      "name": "bootstrap",
+      "type": "",
+      "entity_count": 213
+    },
+    {
+      "id": "bridge",
+      "name": "bridge",
+      "type": "",
+      "entity_count": 327
+    },
+    {
+      "id": "buddy",
+      "name": "buddy",
+      "type": "",
+      "entity_count": 30
+    },
+    {
+      "id": "cli",
+      "name": "cli",
+      "type": "",
+      "entity_count": 231
+    },
+    {
+      "id": "commands",
+      "name": "commands",
+      "type": "",
+      "entity_count": 572
+    },
+    {
+      "id": "components",
+      "name": "components",
+      "type": "",
+      "entity_count": 1407
+    },
+    {
+      "id": "constants",
+      "name": "constants",
+      "type": "",
+      "entity_count": 74
+    },
+    {
+      "id": "context",
+      "name": "context",
+      "type": "",
+      "entity_count": 60
+    },
+    {
+      "id": "coordinator",
+      "name": "coordinator",
+      "type": "",
+      "entity_count": 6
+    },
+    {
+      "id": "cost-tracker.ts",
+      "name": "cost-tracker.ts",
+      "type": "",
+      "entity_count": 0
+    },
+    {
+      "id": "entrypoints",
+      "name": "entrypoints",
+      "type": "",
+      "entity_count": 31
+    },
+    {
+      "id": "hooks",
+      "name": "hooks",
+      "type": "",
+      "entity_count": 592
+    },
+    {
+      "id": "ink",
+      "name": "ink",
+      "type": "",
+      "entity_count": 640
+    },
+    {
+      "id": "keybindings",
+      "name": "keybindings",
+      "type": "",
+      "entity_count": 83
+    },
+    {
+      "id": "memdir",
+      "name": "memdir",
+      "type": "",
+      "entity_count": 49
+    },
+    {
+      "id": "migrations",
+      "name": "migrations",
+      "type": "",
+      "entity_count": 22
+    },
+    {
+      "id": "moreright",
+      "name": "moreright",
+      "type": "",
+      "entity_count": 2
+    },
+    {
+      "id": "native-ts",
+      "name": "native-ts",
+      "type": "",
+      "entity_count": 197
+    },
+    {
+      "id": "plugins",
+      "name": "plugins",
+      "type": "",
+      "entity_count": 435
+    },
+    {
+      "id": "query",
+      "name": "query",
+      "type": "",
+      "entity_count": 8
+    },
+    {
+      "id": "remote",
+      "name": "remote",
+      "type": "",
+      "entity_count": 56
+    },
+    {
+      "id": "screens",
+      "name": "screens",
+      "type": "",
+      "entity_count": 36
+    },
+    {
+      "id": "server",
+      "name": "server",
+      "type": "",
+      "entity_count": 16
+    },
+    {
+      "id": "services",
+      "name": "services",
+      "type": "",
+      "entity_count": 1223
+    },
+    {
+      "id": "skills",
+      "name": "skills",
+      "type": "",
+      "entity_count": 123
+    },
+    {
+      "id": "state",
+      "name": "state",
+      "type": "",
+      "entity_count": 24
+    },
+    {
+      "id": "tasks",
+      "name": "tasks",
+      "type": "",
+      "entity_count": 158
+    },
+    {
+      "id": "tools",
+      "name": "tools",
+      "type": "",
+      "entity_count": 1348
+    },
+    {
+      "id": "types",
+      "name": "types",
+      "type": "",
+      "entity_count": 54
+    },
+    {
+      "id": "upstreamproxy",
+      "name": "upstreamproxy",
+      "type": "",
+      "entity_count": 24
+    },
+    {
+      "id": "utils",
+      "name": "utils",
+      "type": "",
+      "entity_count": 4983
+    },
+    {
+      "id": "vim",
+      "name": "vim",
+      "type": "",
+      "entity_count": 51
+    },
+    {
+      "id": "voice",
+      "name": "voice",
+      "type": "",
+      "entity_count": 7
+    }
+  ],
+  "links": []
+}

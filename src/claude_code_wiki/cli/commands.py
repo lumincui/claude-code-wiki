@@ -32,7 +32,18 @@ def generate(
     """Parse source code and generate wiki using ReAct Agent."""
     click.echo(f"Parsing source code from: {source_dir}")
 
-    graph = parse_project(source_dir, use_lsp=lsp)
+    def show_progress(current, total):
+        import sys
+        bar_width = 40
+        filled = int(bar_width * current / total)
+        bar = "=" * filled + ">" + " " * (bar_width - filled - 1)
+        sys.stdout.write(f"\r  [{bar}] {current}/{total}")
+        sys.stdout.flush()
+        if current == total:
+            sys.stdout.write("\n")
+            sys.stdout.flush()
+
+    graph = parse_project(source_dir, use_lsp=lsp, progress_callback=show_progress)
     click.echo(f"Found {len(graph.entities)} entities, {len(graph.relations)} relations")
 
     from claude_code_wiki.graph.storage import GraphStorage
@@ -49,9 +60,9 @@ def generate(
 
     if skip_agent:
         click.echo("Using heuristic analysis (no LLM)...")
-        from claude_code_wiki.graph.storage import CommunityDetector
+        from claude_code_wiki.graph.storage import DirectoryAwareDetector
 
-        detector = CommunityDetector()
+        detector = DirectoryAwareDetector()
         communities = detector.detect_components(graph)
         from claude_code_wiki.graph.models import Component
 

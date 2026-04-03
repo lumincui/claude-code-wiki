@@ -1,23 +1,45 @@
 # Relationships
 
-## Call Graph
+This page shows the call graph and dependencies extracted from the codebase.
+
+## Relation Types
+
+| Type | Count |
+|------|-------|
+{%- for rtype in ['calls', 'imports', 'contains', 'inherits', 'type_of', 'depends_on'] %}
+{%- set count = relations|selectattr('type.value', 'equalto', rtype)|list|length %}
+{%- if count > 0 %}
+| {{ rtype }} | {{ count }} |
+{%- endif %}
+{%- endfor %}
+
+## Sample Call Graph
 
 ```mermaid
 graph LR
-{% for rel in relations[:30] %}
-{% if rel.type.value == "calls" %}
-    {{ rel.source_id.split(":")[-1] }} --> {{ rel.target_id.split(":")[-1] }}
-{% endif %}
-{% endfor %}
+{%- set seen = [] %}
+{%- for rel in relations[:50] %}
+{%- if rel.type.value == "calls" %}
+{%- set src = rel.source_id.split("/")[-1].split(":")[-1] %}
+{%- set tgt = rel.target_id.split(":")[-1] %}
+{%- set edge = src + "-->" + tgt %}
+{%- if edge not in seen and src and tgt and src != tgt %}
+{%- set _ = seen.append(edge) %}
+    {{ src }} --> {{ tgt }}
+{%- endif %}
+{%- endif %}
+{%- endfor %}
 ```
 
-## All Relations
+## Sample Relations
 
 | Source | Type | Target |
 |--------|------|--------|
-{% for rel in relations[:50] %}
-| {{ rel.source_id.split(":")[-1] }} | {{ rel.type.value }} | {{ rel.target_id.split(":")[-1] }} |
-{% endfor %}
+{%- for rel in relations[:100] %}
+{%- set src = rel.source_id.split("/")[-1].split(":")[-1] %}
+{%- set tgt = rel.target_id.split(":")[-1] %}
+| {{ src }} | {{ rel.type.value }} | {{ tgt }} |
+{%- endfor %}
 
 ---
 

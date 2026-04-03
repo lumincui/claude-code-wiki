@@ -1,31 +1,45 @@
 # Architecture Overview
 
-This wiki documents the architecture of the codebase.
+This wiki documents the architecture of the codebase, generated from code analysis.
 
 ## Statistics
 
-- **Entities**: {{ entity_count }}
-- **Relations**: {{ relation_count }}
-- **Components**: {{ components|length }}
+| Metric | Count |
+|--------|-------|
+| Total Entities | {{ entity_count }} |
+| Total Relations | {{ relation_count }} |
+| Components | {{ components|length }} |
 
 ## Components
 
-{% for comp in components %}
+{%- set seen_names = [] %}
+{%- set unique_comps = [] %}
+{%- for comp in components %}
+{%- if comp.name not in seen_names %}
+{%- set _ = seen_names.append(comp.name) %}
+{%- set _ = unique_comps.append(comp) %}
+{%- endif %}
+{%- endfor %}
+{%- for comp in unique_comps[:50] %}
 - [{{ comp.name }}](./components/{{ comp.name.lower().replace(" ", "-") }}.md)
-{% endfor %}
+{%- endfor %}
+{%- if unique_comps|length > 50 %}
+_... and {{ unique_comps|length - 50 }} more components_
+{%- endif %}
 
-## Architecture Graph
+## Architecture Graph (Top Components)
 
 ```mermaid
 graph TD
-{% for comp in components %}
+{%- set seen_names = [] %}
+{%- set graph_comps = [] %}
+{%- for comp in components %}
+{%- if comp.name not in seen_names and graph_comps|length < 20 %}
+{%- set _ = seen_names.append(comp.name) %}
+{%- set _ = graph_comps.append(comp) %}
     {{ comp.id }}["{{ comp.name }}"]
-{% endfor %}
-{% for comp in components %}
-{% for entity_id in comp.entities[:3] %}
-    {{ comp.id }} --> {{ entity_id }}
-{% endfor %}
-{% endfor %}
+{%- endif %}
+{%- endfor %}
 ```
 
 ## Navigation
